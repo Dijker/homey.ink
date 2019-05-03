@@ -1,4 +1,4 @@
-# Homey.ink
+# Homey.ink 
 
 Homey.ink is an open-source project for wall-mounted Homey dashboards.
 
