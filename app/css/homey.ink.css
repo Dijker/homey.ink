@@ -18,13 +18,33 @@ body {
   font-family: Helvetica, sans-serif;
 }
 
-#container {
+.container {
   box-sizing: border-box;
 }
   #container-inner {
     position: relative;
     width: 100%;
     height: 100%;
+  }
+
+  #container-dark {
+
+  }
+  
+  #info-panel {
+    position: absolute;
+    width: 80vw;
+    height: 60vh;
+    left: 10vw;
+    top: 10vh;
+    padding: 10vh;
+    background: white;
+    background-attachment: fixed;
+    border: 2px solid black;
+    border-radius: 32px;
+    box-sizing: border-box;
+    z-index: 99;
+    visibility: hidden;
   }
 
   #logo {
@@ -37,6 +57,20 @@ body {
     background-size: contain;
   }
   
+  #battery-warning {
+    position: absolute;
+    right: 0;
+    top: 120px;
+    margin-top: 60px;
+    background: black;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center center;
+    width: 110px;
+    height: 50px;
+    background-size: contain;
+  }
+
   #text {
     text-align: center;
   }
@@ -58,7 +92,7 @@ body {
       font-size: 34px;
       font-weight: 500;
     }
-  
+
   #weather {
     
   }
@@ -71,10 +105,36 @@ body {
       content: "°";
     }
     #weather-state {
-      font-size: 48px;
-      font-weight: 700;
+      display: inline-block;
+      position: relative;
+      width: 100px;
+      height: 100px;
+      padding-left: 20px;
+      padding-right: 20px;
     }
+      #weather-state #weather-state-icon {
+        background: black;
+        margin-bottom: 6px;
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center center;
+        background-size: 0px;
+        height: inherit;
+      }
   
+  #sun-events {
+
+  }
+    #sunrise-icon, #sunset-icon {
+      background: black;
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center center;
+      background-repeat: no-repeat;
+      background-size: 0px;
+      height: 25px;
+    }
+
   .favorites {
     
   }

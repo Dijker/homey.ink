@@ -5,19 +5,63 @@ window.addEventListener('load', function() {
   
   var homey;
   var me;
+  var sunrise = "";
+  var sunset = "";
+  var tod = "";
+  var dn = "";
+  var batteryWarning =[];
   
+  var $container = document.getElementById('container');
+  var $header = document.getElementById('header');
+  var $infopanel = document.getElementById('info-panel');
+  var $text = document.getElementById('text');
   var $textLarge = document.getElementById('text-large');
   var $textSmall = document.getElementById('text-small');
   var $logo = document.getElementById('logo');
+  var $batterywarning = document.getElementById('battery-warning');
+  var $weather = document.getElementById('weather');
   var $weatherTemperature = document.getElementById('weather-temperature');
   var $weatherState = document.getElementById('weather-state');
+  var $weatherStateIcon = document.getElementById('weather-state-icon');
+  var $sunevents = document.getElementById('sun-events');
+  var $sunriseicon = document.getElementById('sunrise-icon');
+  var $sunseticon = document.getElementById('sunset-icon');
+  var $sunrisetime = document.getElementById('sunrise-time');
+  var $sunsettime = document.getElementById('sunset-time');
   var $flowsInner = document.getElementById('flows-inner');
   var $devicesInner = document.getElementById('devices-inner');
-  
+
+  $infopanel.addEventListener('click', function() {
+    $container.classList.remove('container-dark');
+    $infopanel.style.visibility = "hidden";
+  });
+
   $logo.addEventListener('click', function(){
     window.location.reload();
   });
-  
+
+  $text.addEventListener('click', function() {
+    homey.notifications.getNotifications().then(function(notifications) {
+      return renderInfoPanel('t',notifications);
+    })
+  });
+
+  $weather.addEventListener('click', function() {
+    homey.weather.getWeather().then(function(weather) {
+      return renderInfoPanel("w", weather)
+    }).catch(console.error);
+  })
+
+  $sunevents.addEventListener('click', function() {
+    homey.weather.getWeather().then(function(weather) {
+      return renderInfoPanel("w", weather)
+    }).catch(console.error);
+  })
+
+  $batterywarning.addEventListener('click', function() {
+    return renderInfoPanel("b")
+  })
+
   renderText();
   later.setInterval(function(){
     renderText();
@@ -57,7 +101,7 @@ window.addEventListener('load', function() {
       renderHomey();
     }, later.parse.text('every 1 hour'));
   }).catch(console.error);
-  
+
   function renderHomey() {
     homey.users.getUserMe().then(function(user) {
       me = user;
@@ -65,6 +109,41 @@ window.addEventListener('load', function() {
       me.properties.favoriteFlows = me.properties.favoriteFlows || [];
       me.properties.favoriteDevices = me.properties.favoriteDevices || [];
       
+      homey.i18n.getOptionLanguage().then(function(language) {
+        console.log(language)
+      }).catch(console.error);
+
+      homey.flowToken.getFlowTokens().then(function(tokens) {
+        for (let token in tokens) {
+          if ( tokens[token].id == "sunrise" ) {
+            sunrise = tokens[token].value
+          }
+          if ( tokens[token].id == "sunset"  ) {
+            sunset = tokens[token].value
+          }
+          if ( tokens[token].id == "alarm_battery" && tokens[token].value == true ) {
+            var batteryLevel
+            for (let ttoken in tokens) {
+              if (tokens[ttoken].uriObj.id == tokens[token].uriObj.id && tokens[ttoken].id == "measure_battery" ) {
+                batteryLevel = tokens[ttoken].value
+              }
+            }
+            var element = {}
+            element.name = tokens[token].uriObj.name
+            element.zone = tokens[token].uriObj.meta.zoneName
+            element.level = batteryLevel
+            batteryWarning.push(element)
+          }
+        }
+        if (sunrise != "" || sunset != "") {
+          calculateTOD();
+          renderSunevents();
+        }
+        if ( Object.keys(batteryWarning).length ) {
+          renderBatteryWarning(batteryWarning);
+        }
+      }).catch(console.error);
+
       homey.weather.getWeather().then(function(weather) {
         return renderWeather(weather);
       }).catch(console.error);
@@ -103,9 +182,98 @@ window.addEventListener('load', function() {
     }).catch(console.error);
   }
   
+  function renderInfoPanel(type,info) {
+    switch(type) {
+      case "t":
+        $infopanel.innerHTML = 'Notifications';
+
+        break;
+      case "w": 
+        $infopanel.innerHTML = '';
+        var $infoPanelWeather = document.createElement('div');
+        $infoPanelWeather.id = "infopanel-weather"
+        $infopanel.appendChild($infoPanelWeather);
+        $wi = "<center><h1>Weather information for " + info.city + "</h1><br />"
+        $wi = $wi + "<h2>The current temperature is " + Math.round(info.temperature*10)/10 + " degrees, "
+        $wi = $wi + "the humidity is " + Math.round(info.humidity*100) + "% and the pressure is "
+        pressure = info.pressure + " "
+        $wi = $wi + pressure.replace('.','') + " mbar</h2></center>";
+
+        $infoPanelWeather.innerHTML = $wi
+
+        var $infopanelState = document.createElement('div');
+        $infopanelState.id = "weather-state"
+        $infopanel.appendChild($infopanelState);
+        $infopanelState.innerHTML = "";
+        $infopanelState.classList.add('weather-state');
+        var $icon = document.createElement('div');
+        $icon.id = 'weather-state-icon';
+        $icon.classList.add(info.state.toLowerCase());
+        $icon.style.backgroundImage = 'url(../img/weather/' + info.state.toLowerCase() + dn + '.svg)';    
+        $icon.style.webkitMaskImage = 'url(../img/weather/' + info.state.toLowerCase() + dn + '.svg)';
+
+        $infopanelState.appendChild($icon)
+
+        var $infoPanelSunevents = document.createElement('div');
+        $infoPanelSunevents.id = "infopanel-sunevents"
+        $infopanel.appendChild($infoPanelSunevents);
+
+        switch(tod) {
+          case 1:
+            $se = "<center><h2>The sun will rise at " + sunrise + " and will set at " + sunset + "</h2></center>"
+            break;
+          case 2:
+            $se = "<center><h2>The sun rose at " + sunrise + " and will set at " + sunset + "</h2></center>"
+            break;
+          case 3:
+            $se = "<center><h2>The sun rose at " + sunrise + " and set at " + sunset + "</h2></center>"
+            break;
+          default:
+            $se = "<center><h2>The sun rises at " + sunrise + " and set at " + sunset + "</h2></center>"
+            break;
+        }
+        $infoPanelSunevents.innerHTML = $se
+
+        break;
+      case "b":
+        $infopanel.innerHTML = '';
+        var $infoPanelBattery = document.createElement('div');
+        $infoPanelBattery.id = "infopanel-battery"
+        $infopanel.appendChild($infoPanelBattery);
+        $bi = "<center><h1>Battery information</h1><br />"
+        $bi = $bi + "These devices have reported a low battery<br /><br />"
+        for (let device in batteryWarning) {
+          console.log(batteryWarning[device])
+          $bi = $bi + "<h2>" + batteryWarning[device].name + " in " 
+          $bi = $bi + batteryWarning[device].zone + " has "
+          $bi = $bi + batteryWarning[device].level + "% left</h2>"
+        }
+        $infopanel.innerHTML = $bi
+
+        break;
+    }
+    console.log("style")
+    $infopanel.style.visibility = "visible";
+    $container.classList.add('container-dark');
+  }
+
+  function renderSunevents() {
+    $sunriseicon.style.webkitMaskImage = 'url(../img/sunrise.png)';
+    $sunrisetime.innerHTML = sunrise;
+    $sunseticon.style.webkitMaskImage = 'url(../img/sunset.png)';
+    $sunsettime.innerHTML = sunset;
+  }
+
+  function renderBatteryWarning() {
+    $batterywarning.style.webkitMaskImage = 'url(../img/battery.png)';
+    $header.appendChild($batterywarning)
+  }
+
   function renderWeather(weather) {
     $weatherTemperature.innerHTML = Math.round(weather.temperature);
-    $weatherState.innerHTML = weather.state;
+    $weatherStateIcon.classList.add(weather.state.toLowerCase());
+    $weatherStateIcon.style.backgroundImage = 'url(../img/weather/' + weather.state.toLowerCase() + dn + '.svg)';    
+    $weatherStateIcon.style.webkitMaskImage = 'url(../img/weather/' + weather.state.toLowerCase() + dn + '.svg)';
   }
   
   function renderFlows(flows) {
@@ -188,4 +356,38 @@ window.addEventListener('load', function() {
     $textSmall.innerHTML = 'Today is ' + moment(now).format('dddd[, the ]Do[ of ]MMMM YYYY[.]');
   }
   
+  function calculateTOD() {
+
+    var d = new Date();
+    var m = d.getMinutes();
+    var h = d.getHours();
+    if(h == '0') {h = 24}
+
+    var currentTime = h+"."+m;
+    console.log(currentTime)
+    var time = sunrise.split(":");
+    var hour = time[0];
+    if(hour == '00') {hour = 24}
+    var min = time[1];
+    var sunriseTime = hour+"."+min;
+
+    var time = sunset.split(":");
+    var hour = time[0];
+    if(hour == '00') {hour = 24}
+    var min = time[1];
+    var sunsetTime = hour+"."+min;
+
+    if ( currentTime < sunriseTime  ) {
+      tod = 1;
+      dn = "n";
+    } 
+    else if ( currentTime < sunsetTime ) {
+      tod = 2;
+      dn = "";
+    } else {
+      tod = 3;
+      dn = "n";
+    }
+  }
+
 });

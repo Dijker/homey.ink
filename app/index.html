@@ -20,13 +20,13 @@
     <script type="text/javascript" src="./js/homey.ink.helpers.js"></script>
     <script type="text/javascript" src="./js/homey.ink.app.js"></script>
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-54367249-20"></script>
+    <!--script async src="https://www.googletagmanager.com/gtag/js?id=UA-54367249-20"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'UA-54367249-20');
-    </script>
+    </script-->
   </head>
   <body>
     
@@ -35,16 +35,29 @@
       <div id="container-inner">
         
         <div id="header">
+          <div id="info-panel"></div>
+
           <div id="logo"></div>
           
+          <div id="battery-warning"></div>
+
           <div id="text">
             <div id="text-large"></div>
             <div id="text-small"></div>
           </div>
           
           <div id="weather">
-            <div id="weather-temperature">n/a</div>
-            <div id="weather-state">n/a</div>
+            <div id="weather-temperature"></div>
+            <div id="weather-state">
+              <div id="weather-state-icon"></div>
+            </div>
+          </div>
+
+          <div id="sun-events">
+            <div id="sunrise-icon"></div>
+            <div id="sunrise-time"></div>
+            <div id="sunset-icon"></div>
+            <div id="sunset-time"></div>
           </div>
         </div>
         

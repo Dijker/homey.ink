@@ -7,13 +7,53 @@ body {
   color: white;
 }
 
+.container-dark {
+  background-color: Black;
+  opacity: 0.6;
+}
+
 #text-large:after {
   background: white;
+}
+
+#info-panel {
+  width: 75vw;
+  background: -webkit-linear-gradient(55deg, #009785 0%, #245AA5 50%, #B800E9 90%);
+  background-attachment: fixed;
+  border: 1px solid #009785;
+  border-radius: 6px;
+  box-sizing: border-box;
+  z-index: 99;
+  opacity: 0.95;
 }
 
 #logo {
   background-image: url(../img/logo-white.png);  
 }
+
+#battery-warning {
+  background: red;
+}
+
+#weather-state {
+
+}
+  #weather-state #weather-state-icon {
+    background: white;
+    background-repeat: no-repeat;
+    background-size: 100px;
+  }
+
+#sun-events {
+
+}
+  #sunrise-icon {
+    background: orange;
+  }
+
+  #sunset-icon {
+    background: red;
+  }
 
 .favorites h2 {
   font-weight: 300;
