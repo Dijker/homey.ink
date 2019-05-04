@@ -62,13 +62,14 @@ body {
     right: 0;
     top: 120px;
     margin-top: 60px;
-    background: black;
     -webkit-mask-size: contain;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center center;
     width: 110px;
     height: 50px;
+    background: url(../img/battery.png) no-repeat center center;
     background-size: contain;
+    visibility: hidden;
   }
 
   #text {
@@ -126,13 +127,19 @@ body {
 
   }
     #sunrise-icon, #sunset-icon {
-      background: black;
       -webkit-mask-size: contain;
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-position: center center;
-      background-repeat: no-repeat;
-      background-size: 0px;
-      height: 25px;
+      width: 40px;
+      height: 20px;
+    }
+    #sunrise-icon {
+      background: url(../img/sunrise.png) no-repeat center center;
+      background-size: 100%;      
+    }
+    #sunset-icon {
+      background: url(../img/sunset.png) no-repeat center center;
+      background-size: 100%;
     }
 
   .favorites {

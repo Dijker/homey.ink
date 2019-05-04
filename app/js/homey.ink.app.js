@@ -24,8 +24,6 @@ window.addEventListener('load', function() {
   var $weatherState = document.getElementById('weather-state');
   var $weatherStateIcon = document.getElementById('weather-state-icon');
   var $sunevents = document.getElementById('sun-events');
-  var $sunriseicon = document.getElementById('sunrise-icon');
-  var $sunseticon = document.getElementById('sunset-icon');
   var $sunrisetime = document.getElementById('sunrise-time');
   var $sunsettime = document.getElementById('sunset-time');
   var $flowsInner = document.getElementById('flows-inner');
@@ -140,7 +138,11 @@ window.addEventListener('load', function() {
           renderSunevents();
         }
         if ( Object.keys(batteryWarning).length ) {
-          renderBatteryWarning(batteryWarning);
+          console.log("Waarschuwing")
+          $batterywarning.style.visibility = "visible";
+        } else {
+          console.log("Geen waarschuwing")
+          $batterywarning.style.visibility = "hidden";
         }
       }).catch(console.error);
 
@@ -258,22 +260,15 @@ window.addEventListener('load', function() {
   }
 
   function renderSunevents() {
-    $sunriseicon.style.webkitMaskImage = 'url(../img/sunrise.png)';
     $sunrisetime.innerHTML = sunrise;
-    $sunseticon.style.webkitMaskImage = 'url(../img/sunset.png)';
     $sunsettime.innerHTML = sunset;
-  }
-
-  function renderBatteryWarning() {
-    $batterywarning.style.webkitMaskImage = 'url(../img/battery.png)';
-    $header.appendChild($batterywarning)
   }
 
   function renderWeather(weather) {
     $weatherTemperature.innerHTML = Math.round(weather.temperature);
     $weatherStateIcon.classList.add(weather.state.toLowerCase());
-    $weatherStateIcon.style.backgroundImage = 'url(../img/weather/' + weather.state.toLowerCase() + dn + '.svg)';    
-    $weatherStateIcon.style.webkitMaskImage = 'url(../img/weather/' + weather.state.toLowerCase() + dn + '.svg)';
+    $weatherStateIcon.style.backgroundImage = 'url(img/weather/' + weather.state.toLowerCase() + dn + '.svg)';    
+    $weatherStateIcon.style.webkitMaskImage = 'url(img/weather/' + weather.state.toLowerCase() + dn + '.svg)';
   }
   
   function renderFlows(flows) {

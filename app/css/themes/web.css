@@ -53,8 +53,7 @@
 }      
   #sunrise-icon, #sunset-icon  {
     width: 6vh;
-    height: 2vw;
-    background-size: 6vh 2vw;
+    height: 3vh;
     margin-bottom: 0.7vh;
   }
 

@@ -33,6 +33,7 @@ body {
 
 #battery-warning {
   background: red;
+  -webkit-mask-image: url(../img/battery.png);
 }
 
 #weather-state {
@@ -48,11 +49,12 @@ body {
 
 }
   #sunrise-icon {
-    background: orange;
+    background: url(../img/sunrise-color.png) no-repeat center center;
+    background-size: 100%;      
   }
-
   #sunset-icon {
-    background: red;
+    background: url(../img/sunset-color.png) no-repeat center center;
+    background-size: 100%;
   }
 
 .favorites h2 {
